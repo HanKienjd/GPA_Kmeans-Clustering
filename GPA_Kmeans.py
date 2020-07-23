@@ -4,8 +4,9 @@ import random
 import matplotlib.pyplot as plt
 
 from scipy.spatial.distance import cdist
-
-with open('diem.csv') as csv_file:
+# %mathplotlib inline
+#path in linux, in windows change path = diem.csv
+with open("/home/dev/Python/K-meansClusteringBasic/diem.csv") as csv_file:
     csv_reader= csv.reader(csv_file, delimiter=',')
     line_count=0
     myList=[]
@@ -73,8 +74,24 @@ def kmeans(X, K):
         it+=1
     return (centroids, labels, it)
 
+def kmeans_display(X, labels):
+    K = np.amax(label) + 1
+    # Tách các điểm thộc cùng một clustering thành từng nhóm
+    X0 = X[label == 0, :]
+    X1 = X[label == 1, :]
+    X2 = X[label == 2, :]
+    
+    # Tọa độ hóa các điểm và gán màu cho các điểm thuộc cùng cluster
+    plt.plot(X0[:, 0], X0[:, 1], 'b^', markersize = 4, alpha = .8)
+    plt.plot(X1[:, 0], X1[:, 1], 'go', markersize = 4, alpha = .8)
+    plt.plot(X2[:, 0], X2[:, 1], 'rs', markersize = 4, alpha = .8)
+
+    plt.axis('equal')
+    plt.plot()
+    plt.show()
 
 # Thực hiện chương trình(centroids, labels, it) = kmeans(X, K)
 (centroids, labels, it) = kmeans(a, k)
 print(centroids)
 print(labels)
+# kmeans_display(X,labels[-1])
