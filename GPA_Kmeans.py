@@ -1,12 +1,13 @@
 import csv
 import numpy as np
 import random
-import matplotlib.pyplot as plt
-
 from scipy.spatial.distance import cdist
-# %mathplotlib inline
-#path in linux, in windows change path = diem.csv
-with open("/home/dev/Python/K-meansClusteringBasic/diem.csv") as csv_file:
+import matplotlib.pyplot as plt
+import random
+
+np.random.seed(18)
+
+with open('/home/dev/Python/K-meansClusteringBasic/diem.csv') as csv_file:
     csv_reader= csv.reader(csv_file, delimiter=',')
     line_count=0
     myList=[]
@@ -20,7 +21,7 @@ a=np.array(myList)
 a=a.reshape(-1,1)
 a=a.astype(np.float)
 
-K=3 #3 cụm(Clusters)
+k=4 # cụm(Clusters)
 
 # Hàm khởi tạo ngẫu nhiên các centroids ban đầu
 def kmeans_init_centroids(X, k):
@@ -74,35 +75,51 @@ def kmeans(X, K):
         it+=1
     return (centroids, labels, it)
 
-def kmeans_display(X, label):
-    K = np.amax(label) + 1
-    # Tách các điểm thộc cùng một clustering thành từng nhóm
-    X0 = X[label == 0, :]
-    X1 = X[label == 1, :]
-    X2 = X[label == 2, :]
-    
-    # Tọa độ hóa các điểm và gán màu cho các điểm thuộc cùng cluster
-    plt.plot(X0[:, 0], X0[:, ], 'b^', markersize = 4, alpha = .8)
-    plt.plot(X1[:, 0], X1[:, ], 'go', markersize = 4, alpha = .8)
-    plt.plot(X2[:, 0], X2[:, ], 'rs', markersize = 4, alpha = .8)
 
-    # print(X0)
-    plt.axis('equal')
-    plt.xlabel('Number of clusters')
-    plt.ylabel('Average distance')
-    plt.plot()
-    plt.show()
-# Thực hiện chương trình(centroids, labels, it) = kmeans(a, K)
-(centroids, labels, it) = kmeans(a, K)
-#chuyuển sang dạng list 
-arrlabels = np.squeeze(np.asarray(labels[-1]))
-arrcentroids = np.squeeze(np.asarray(centroids))
+# Thực hiện chương trình(centroids, labels, it) = kmeans(X, K)
+(centroids, labels, it) = kmeans(a, k)
 
-print(arrcentroids)
-print(arrlabels) 
-# K = np.amax(labels) + 1
-# kmeans_display(X, labels[-1])
+#Đếm số lượng phần tử thuộc mỗi centroid
+arr= np.squeeze(np.asarray(labels[-1]))
+arrLabelNumber=[]
+number=0
+for i in range(k):
+    for label in arr:
+        if label==i:
+            number+=1
+    arrLabelNumber.append(number)
+    number=0
 
-# print("Centers found by our algorithm:\n", centroids[-1])
-# print(it)
-kmeans_display(a, labels[-1])
+#Lấy giá trị của các centroid
+centroids_value= np.squeeze(np.asarray(centroids[-1]))
+
+for i in range(k-1):
+    for j in range(0, k-i-1):
+        if arrLabelNumber[j] > arrLabelNumber[j+1] : 
+                arrLabelNumber[j], arrLabelNumber[j+1] = arrLabelNumber[j+1], arrLabelNumber[j]
+                centroids_value[j], centroids_value[j+1] = centroids_value[j+1], centroids_value[j] 
+
+
+print(centroids_value)
+print(arrLabelNumber)
+plt.plot(arrLabelNumber,centroids_value,color='green', linestyle='dashed', linewidth = 3, 
+         marker='o', markerfacecolor='blue', markersize=12)
+plt.xlabel("Số lượng sinh viên")
+plt.ylabel("Điểm trung bình")
+plt.title("Thống kê điểm trung bình năm nhất")
+
+#Tọa độ trục
+plt.grid(True)
+plt.ylim(1,4)
+xstick=[]
+ystick=[]
+i=0
+while(i<4):
+    ystick.append(i)
+    i+=0.25
+i=0
+while(i<100):
+    xstick.append(i)
+    i+=1
+plt.yticks(ystick)
+plt.show()
